@@ -21,21 +21,6 @@ local updateBarCharge = (function()
     end
 end)();
 
-local gradientBarMask = (function()
-    local chars = {};
-
-    for i = 0, 255 do
-        local p = #chars;
-
-        chars[p + 1], chars[p + 1025] = 255, 255;
-		chars[p + 2], chars[p + 1026] = 255, 255;
-		chars[p + 3], chars[p + 1027] = 255, 255;
-		chars[p + 4], chars[p + 1028] = i, i;
-    end
-
-    return draw.CreateTextureRGBA(string.char(table.unpack(chars)), 256, 2)
-end)();
-
 callbacks.Register("Draw", function()
     if engine.Con_IsVisible() or engine.IsGameUIVisible() then
         return
@@ -56,8 +41,8 @@ callbacks.Register("Draw", function()
         draw.Color(59, 66, 199, 255)
         draw.FilledRect(barX, barY, barX + math.floor(charge * barWidth), barY + barHeight)
 
-        draw.Color(23, 165, 239, math.floor(math.sin(globals.CurTime()*1.5) * 100 + 155))
-        draw.TexturedRect(gradientBarMask, barX, barY, barX + math.floor(charge * barWidth), barY + barHeight)
+        draw.Color(23, 165, 239, 255)
+        draw.FilledRectFade(barX, barY, barX + math.floor(charge * barWidth), barY + barHeight, 0, math.floor(math.sin(globals.CurTime()*1.5) * 100 + 155), true)
     end
 
     -- Border
@@ -97,8 +82,4 @@ end)
 
 callbacks.Register("CreateMove", function(cmd)
     updateBarCharge()
-end)
-
-callbacks.Register("Unload", function()
-    draw.DeleteTexture(gradientBarMask)
 end)
